@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Signin } from './Signin';
 import { Header } from './Header';
 import { ThemeProvider, theme, CSSReset, ToastProvider } from '@blockstack/ui';
-import { TodoList } from './TodoList';
+import { DocumentList } from './DocumentList';
 import { userSession } from '../auth';
 
 export default class App extends Component {
@@ -23,7 +23,7 @@ export default class App extends Component {
           <div className="site-wrapper">
             <div className="site-wrapper-inner">
               <Header />
-              {!userSession.isUserSignedIn() ? <Signin /> : <TodoList />}
+              {!userSession.isUserSignedIn() ? <Signin /> : <DocumentList />}
             </div>
           </div>
         </ToastProvider>

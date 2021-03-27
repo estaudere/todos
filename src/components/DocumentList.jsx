@@ -6,8 +6,9 @@ import { v4 as uuid } from 'uuid';
 import { Sharer } from './Sharer';
 import { fetchTasks, saveTasks } from '../storage';
 import exportFromJSON from 'export-from-json';
+import Loader from '../loader.gif';
 
-export const TodoList = () => {
+export const DocumentList = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
@@ -88,7 +89,7 @@ export const TodoList = () => {
       }
       return `${username.split('.')[0]}'s todos are private`;
     }
-    return 'My todos';
+    return 'My documents';
   };
 
   return (
@@ -112,7 +113,7 @@ export const TodoList = () => {
               }}
             />
           )}
-          {loading ? <Text>loading...</Text> : todos}
+          {loading ? <img src={Loader} style={{ height: '50px' }} alt="Loading..." /> : todos}
         </Flex>
       </Box>
     </Flex>

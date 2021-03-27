@@ -77,7 +77,7 @@ export const Sharer = ({ togglePublic, isPublic }) => {
             </Box>
             <Box flexGrow={1} px={3}>
               <Text fontWeight="500" display="block" mb={0} fontSize={1}>
-                Share your todos
+                Share your documents
               </Text>
               <Text fontSize={1}>Make your list public to share it with others</Text>
             </Box>

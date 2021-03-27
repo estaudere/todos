@@ -8,7 +8,7 @@ export const userSession = new UserSession({ appConfig });
 export function authenticate() {
   showConnect({
     appDetails: {
-      name: 'Todos',
+      name: 'BlockID',
       icon: window.location.origin + '/logo.svg',
     },
     redirectTo: '/',

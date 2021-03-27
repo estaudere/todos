@@ -56,7 +56,7 @@ export const Header = () => {
       <Box alignItems onClick={() => (document.location = '/')} cursor="pointer">
         <Logo style={{ position: 'relative', top: '-1px' }} />
         <Text ml={2} display="inline-block" fontWeight="600">
-          Todos
+          BlockID
         </Text>
       </Box>
       <Auth />
