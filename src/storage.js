@@ -5,18 +5,12 @@ import { Storage } from '@stacks/storage';
 const storage = new Storage({ userSession });
 const TASKS_FILENAME = 'tasks.json';
 
-/**
- * @typedef {Object} Task
- * @property {boolean} complete
- * @property {string} value
- * @property {string} id
- */
-
 // @type {Task[]}
-export const defaultTasks = [
+export const defaultInfo = [
   {
-    complete: false,
-    value: '',
+    name: '',
+    email: '',
+    age: '',
     id: uuid(),
   },
 ];
@@ -27,8 +21,8 @@ export const defaultTasks = [
  * @param {Todo[]} tasks
  * @param {boolean} isPublic
  */
-export const saveTasks = async (userSession, tasks, isPublic) => {
-  await storage.putFile(TASKS_FILENAME, JSON.stringify({ tasks, isPublic }), {
+export const saveInfo = async (userSession, info, isPublic) => {
+  await storage.putFile(TASKS_FILENAME, JSON.stringify({ info, isPublic }), {
     encrypt: !isPublic,
     dangerouslyIgnoreEtag: true,
   });
@@ -55,32 +49,32 @@ export const fetchTasks = async (userSession, username) => {
       const json = JSON.parse(tasksJSON);
       if (json.isPublic) {
         return {
-          tasks: json.tasks,
+          info: json.info,
           public: true,
         };
       } else {
         if (!username) {
           const decrypted = JSON.parse(await userSession.decryptContent(tasksJSON));
           return {
-            tasks: decrypted.tasks,
+            info: decrypted.info,
             public: false,
           };
         }
       }
     } else {
       return {
-        tasks: username ? null : defaultTasks,
+        info: username ? null : defaultInfo,
         public: false,
       };
     }
   } catch (error) {
     if (username) {
       return {
-        tasks: null,
+        info: null,
       };
     } else {
       return {
-        tasks: defaultTasks,
+        info: defaultInfo,
       };
     }
   }

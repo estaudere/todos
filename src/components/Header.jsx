@@ -4,6 +4,7 @@ import { getPerson, getUserData, userSession } from '../auth';
 import { Logo } from './icons/logo';
 
 const Auth = () => {
+  console.log(getUserData());
   if (!userSession.isUserSignedIn()) {
     return null;
   }
@@ -32,7 +33,7 @@ const Auth = () => {
   return (
     <Box>
       <Avatar />
-      <Text fontWeight="500">{getUserData().username}</Text>
+      <Text fontWeight="500">{getUserData().decentralizedID}</Text>
       <Text
         fontWeight="300"
         display="inline-block"

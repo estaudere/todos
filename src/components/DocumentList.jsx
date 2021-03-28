@@ -1,31 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Flex, Box, Text } from '@blockstack/ui';
-import { userSession } from '../auth';
-import { Todo } from './Todo';
-import { v4 as uuid } from 'uuid';
-import { Sharer } from './Sharer';
-import { fetchTasks, saveTasks } from '../storage';
-import exportFromJSON from 'export-from-json';
+import { Flex, Box, Text, Button } from '@blockstack/ui';
+import { userSession, getUserData } from '../auth';
+import { Info } from './Info';
+import { fetchTasks, saveInfo } from '../storage';
 import Loader from '../loader.gif';
+import QRCode from 'react-qr-code';
 
 export const DocumentList = () => {
-  const [tasks, setTasks] = useState([]);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [age, setAge] = useState('');
+  const [info, setInfo] = useState({});
   const [loading, setLoading] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
-  const [username, setUsername] = useState('');
+  const [id, setID] = useState('');
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const username = document.location.pathname.split('/')[2];
-    if (username) {
-      setUsername(username);
+    const id = document.location.pathname.split('/')[2];
+    if (id) {
+      setID(id);
     }
     const doFetchTasks = async () => {
-      const response = await fetchTasks(userSession, username);
+      const response = await fetchTasks(userSession, id);
       if (response.tasks === null) {
         setNotFound(true);
       } else {
-        setTasks(response.tasks);
+        setInfo(response.info);
       }
       setIsPublic(!!response.public);
       setLoading(false);
@@ -33,63 +34,20 @@ export const DocumentList = () => {
     doFetchTasks();
   }, []);
 
-  const saveTask = ({ value, complete, index, remove }) => {
-    setTasks(currentTasks => {
-      if (remove && index !== 0) {
-        currentTasks.splice(index, 1);
-        void saveTasks(userSession, currentTasks);
-        return currentTasks;
-      } else {
-        const task = currentTasks[index];
-        task.value = value;
-        task.complete = complete;
-        currentTasks[index] = task;
-        void saveTasks(userSession, currentTasks);
-        return currentTasks;
-      }
-    });
-  };
-
-  const createTask = () => {
-    setTasks(tasks.concat([{ value: '', completed: false, id: uuid() }]));
-  };
-
-  const exportData = ({ exportType }) => {
-    exportFromJSON({ data: tasks, fileName: 'todo', exportType: 'csv' });
-  };
-
-  const todos = tasks.map((task, index) => (
-    <Todo
-      {...task}
-      index={index}
-      key={task.id}
-      save={saveTask}
-      disabled={!!username}
-      create={createTask}
-    />
-  ));
-
-  const getDownload = () => {
-    if (loading) {
-      return '';
-    }
-    return 'Export as CSV';
-  };
-
   const getHeader = () => {
     if (loading) {
       return 'Loading...';
     }
     if (notFound) {
-      return '404. No todos found here.';
+      return '404. The id is either private or does not exist.';
     }
-    if (username) {
+    if (id) {
       if (isPublic) {
-        return `${username.split('.')[0]}'s todos`;
+        return `${id.split('.')[0]}'s info`;
       }
-      return `${username.split('.')[0]}'s todos are private`;
+      return `${id.split('.')[0]}'s info is private`;
     }
-    return 'My documents';
+    return 'My Info';
   };
 
   return (
@@ -101,20 +59,28 @@ export const DocumentList = () => {
               {getHeader()}
             </Text>
           </Box>
-          <Text cursor="pointer" fontSize={1} color="blue" fontWeight="500" onClick={exportData}>
-            {getDownload()}
-          </Text>
-          {!loading && !username && (
-            <Sharer
-              isPublic={isPublic}
-              togglePublic={() => {
-                void saveTasks(userSession, tasks, !isPublic);
-                setIsPublic(!isPublic);
-              }}
-            />
+          {loading ? (
+            <img src={Loader} style={{ height: '50px' }} alt="Loading..." />
+          ) : (
+            <>
+              <Info placeholde="Name" value={info.name} input={name} setInput={setName} />
+              <Info placeholder="Email" value={info.email} input={email} setInput={setEmail} />
+              <Info placeholder="Age" value={info.age} input={age} setInput={setAge} />
+              <Button onClick={() => saveInfo(userSession, { name, email, age }, true)}>
+                Save Info
+              </Button>
+            </>
           )}
-          {loading ? <img src={Loader} style={{ height: '50px' }} alt="Loading..." /> : todos}
         </Flex>
+        <hr style={{ marginTop: '20px' }} />
+        <Box my={5}>
+          <Text textStyle="display.large" fontSize={5}>
+            Your QR Code:
+          </Text>
+          <Box my={5}>
+            <QRCode value={getUserData().decentralizedID} />
+          </Box>
+        </Box>
       </Box>
     </Flex>
   );
